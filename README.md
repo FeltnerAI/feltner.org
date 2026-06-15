@@ -52,7 +52,3 @@ publishes `./dist` to GitHub Pages. The `public/CNAME` file pins the custom doma
 
 In the repository settings, set **Settings → Pages → Build and deployment → Source** to
 **GitHub Actions**.
-
-## License
-
-Documentation and site content for FeltnerAI, which is licensed **AGPL-3.0-only**.
