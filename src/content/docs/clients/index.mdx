@@ -1,0 +1,85 @@
+---
+title: Client List
+description: Every app that can connect to a FeltnerAI server — desktop, web, and mobile.
+---
+
+import { Card, CardGrid, LinkCard, Aside } from '@astrojs/starlight/components';
+
+FeltnerAI clients all connect to a server **you** run. The web app and the desktop Portal are
+built from the same React bundle, so they share one consistent interface.
+
+<Aside type="note" title="You need a server first">
+Clients are useless on their own — they connect to a FeltnerAI server. If you don't have one
+yet, start with the [Quick Start](/docs/quick-start/).
+</Aside>
+
+## Available now
+
+<CardGrid>
+  <Card title="Web App" icon="open-book">
+    <p><span class="fai-pill" data-status="available">Available</span></p>
+    Served directly by the server at its root URL — nothing to install. Works in any modern
+    browser. Authenticates with a session cookie and CSRF token.
+    <p>[How to connect →](/docs/clients/connect/)</p>
+  </Card>
+  <Card title="Desktop Portal — Windows" icon="seti:windows">
+    <p><span class="fai-pill" data-status="available">Available</span></p>
+    Native Tauri v2 app. Connect to multiple servers, with credentials stored in the Windows
+    credential manager. Built from `target/release/bundle`.
+  </Card>
+  <Card title="Desktop Portal — macOS" icon="apple">
+    <p><span class="fai-pill" data-status="available">Available</span></p>
+    Native Tauri v2 app for macOS. Unsigned development builds are supported; production signing
+    and notarization are release-operator responsibilities.
+  </Card>
+  <Card title="Desktop Portal — Linux" icon="linux">
+    <p><span class="fai-pill" data-status="available">Available</span></p>
+    Native Tauri v2 app for Linux, packaged with the platform installer that Tauri emits.
+  </Card>
+</CardGrid>
+
+## Planned
+
+<CardGrid>
+  <Card title="Mobile (iOS / Android)" icon="phone">
+    <p><span class="fai-pill" data-status="planned">Planned</span></p>
+    Native mobile clients are not part of v1. In the meantime, the web app works in mobile
+    browsers against any reachable server.
+  </Card>
+</CardGrid>
+
+## Downloads
+
+The Portal is distributed as a platform installer built with Tauri. v1 has **no in-app
+updater**, so download the build for your operating system and reinstall to upgrade.
+
+<CardGrid>
+  <LinkCard
+    title="GitHub Releases"
+    description="Download the latest Portal installers for Windows, macOS, and Linux."
+    href="https://github.com/FeltnerAI/FeltnerAI/releases"
+  />
+  <LinkCard
+    title="Build it yourself"
+    description="Build the Portal from source for your current platform."
+    href="https://github.com/FeltnerAI/FeltnerAI"
+  />
+</CardGrid>
+
+### Build the Portal from source
+
+```powershell
+bun install --cwd frontend --frozen-lockfile
+bun run --cwd frontend tauri build
+```
+
+Tauri emits platform installers under `target/release/bundle`.
+
+## Choosing a client
+
+| If you want to… | Use |
+| --- | --- |
+| Try FeltnerAI with zero install | **Web app** |
+| Connect to several servers from one place | **Desktop Portal** |
+| A persistent, native desktop experience | **Desktop Portal** |
+| Access from a phone today | **Web app** in a mobile browser |

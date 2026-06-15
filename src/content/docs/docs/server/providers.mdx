@@ -1,0 +1,71 @@
+---
+title: Configure Providers
+description: Add an OpenAI-compatible provider to FeltnerAI and discover its models.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+FeltnerAI does not ship its own model. Instead you connect a **generic OpenAI-compatible
+provider** — any service that speaks the OpenAI Chat Completions API — and FeltnerAI discovers
+the models it offers.
+
+## What counts as OpenAI-compatible
+
+A provider works with FeltnerAI if it exposes:
+
+- a base URL for the OpenAI-style API,
+- a `chat/completions` endpoint that supports streaming,
+- a `models` endpoint for discovery,
+- bearer-token (API key) authentication, or custom secret headers.
+
+This includes the OpenAI API itself and the many self-hosted and hosted gateways that implement
+the same protocol. See [OpenAI Compatibility](/docs/api/openai-compatible/) for details.
+
+## Add a provider
+
+You add the first provider during [first-run setup](/docs/server/setup/), and more later from
+the admin UI.
+
+<Steps>
+
+1. Go to **Admin → Providers** and choose to add a provider.
+
+2. Enter the provider's **base URL** and **API key** (and any custom secret headers it
+   requires).
+
+3. **Test the connection.** FeltnerAI calls the provider to validate credentials before saving.
+
+4. Save. FeltnerAI **discovers the available models** from the provider.
+
+5. Configure which models are exposed to users under **Admin → Providers → Models** or
+   **Admin → Models**.
+
+</Steps>
+
+<Aside type="note" title="Secrets are encrypted">
+API keys and custom secret headers are encrypted at rest using the server's local
+`encryption.key`. Back that key up together with the database — see
+[Backups & Data](/docs/server/backups/).
+</Aside>
+
+## Managing models
+
+After discovery, choose which models your users can select. Model configuration lives under:
+
+- `Admin → Providers → {provider} → Models`
+- `Admin → Models`
+
+Only models you enable appear in the client model picker.
+
+## Testing without the UI
+
+The setup flow exposes a provider test endpoint so credentials are validated before they are
+stored:
+
+```http
+POST /api/v1/setup/test-provider
+X-Setup-Token: <token>
+```
+
+After setup, admins test saved providers through `Admin → Providers`, backed by
+`POST /api/v1/admin/providers/{id}/test`. See the [API Reference](/docs/api/reference/).

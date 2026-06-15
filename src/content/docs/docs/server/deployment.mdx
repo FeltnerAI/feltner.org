@@ -1,0 +1,69 @@
+---
+title: Deployment
+description: Bind address, environment variables, and running FeltnerAI behind a TLS reverse proxy.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The `feltnerai-server` binary serves both the API (`/api/v1`) and the embedded web app. This
+page covers configuring it for a real deployment.
+
+## Environment variables
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FELTNERAI_DATA_DIR` | OS user data directory | Override for SQLite, encryption key, and persistent state |
+| `FELTNERAI_BIND` | `127.0.0.1:8080` | Server listen address |
+| `FELTNERAI_PUBLIC_URL` | unset | Canonical HTTPS URL; overrides the stored value at startup |
+| `FELTNERAI_LOG` | `feltnerai=info,tower_http=info` | Rust tracing filter |
+| `FELTNERAI_LOG_JSON` | `false` | Emit JSON logs |
+| `FELTNERAI_TRUSTED_PROXIES` | unset | Comma-separated exact proxy IPs allowed to supply `X-Forwarded-For` |
+
+<Aside type="caution" title="One process per data directory">
+Run only one FeltnerAI process against a given data directory.
+</Aside>
+
+## Data directory
+
+Without an override, FeltnerAI follows operating-system conventions:
+
+- **Windows:** `%LOCALAPPDATA%\FeltnerAI\FeltnerAI Server\data`
+- **macOS:** `~/Library/Application Support/ai.FeltnerAI.FeltnerAI-Server`
+- **Linux:** `$XDG_DATA_HOME/feltnerai-server` or `~/.local/share/feltnerai-server`
+
+When an upgraded server first starts with the new default, it looks for a legacy `data`
+directory beside the executable and in the working directory. If found, it copies that
+directory into the OS location and preserves the legacy copy as an extra safeguard.
+
+## TLS reverse proxy
+
+Terminate TLS at a reverse proxy and bind FeltnerAI to loopback. Example Caddy configuration:
+
+```text
+ai.example.com {
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
+Then set:
+
+```text
+FELTNERAI_PUBLIC_URL=https://ai.example.com
+FELTNERAI_TRUSTED_PROXIES=127.0.0.1
+```
+
+<Aside type="danger" title="Trust proxies narrowly">
+Do not trust broad proxy ranges unless every address in that range is controlled. FeltnerAI
+uses forwarded client addresses only when the immediate peer is explicitly trusted.
+</Aside>
+
+## Windows start-at-login
+
+On Windows, administrators can enable **Open FeltnerAI Server when I sign in to Windows** from
+**Admin → Server**. This registers the current executable under the current user's standard
+Windows `Run` key.
+
+## Next steps
+
+- [Backups & Data](/docs/server/backups/) — protect your database and encryption key
+- [Download a client](/downloads/)

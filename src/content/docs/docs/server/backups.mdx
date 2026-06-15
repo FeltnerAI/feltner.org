@@ -1,0 +1,51 @@
+---
+title: Backups & Data
+description: What FeltnerAI stores, how to back it up safely, and how to restore.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+## What lives in the data directory
+
+- `feltnerai.db` — the SQLite database, plus temporary WAL/SHM files while running
+- `encryption.key` — used to decrypt provider API keys and custom secret headers
+
+<Aside type="danger" title="Back them up together">
+A database backup **without** its matching `encryption.key` cannot recover provider
+credentials. Back up the database and `encryption.key` together, and protect backups as
+secrets.
+</Aside>
+
+## Online backup and restore (admin UI)
+
+Administrators can use **Admin → Server → Backup and restore** to:
+
+- **Export** a consistent online ZIP snapshot containing `feltnerai.db`, `encryption.key`, and
+  a versioned manifest.
+- **Import** a compatible FeltnerAI ZIP after validation. The server stages the files, shuts
+  down SQLite cleanly, keeps a rollback copy, applies the restore, and restarts.
+
+These map to `POST /api/v1/admin/data/export` and `POST /api/v1/admin/data/import`.
+
+## Consistent offline backup
+
+<Steps>
+
+1. Stop the FeltnerAI process.
+
+2. Copy the **entire** data directory (database and `encryption.key`).
+
+3. Restart the process.
+
+</Steps>
+
+<Aside type="caution" title="Do not copy a live database file">
+If you use online backup tooling, use SQLite's backup API or a tool that understands WAL mode.
+Do not copy only the main `.db` file while the server is active — it will be inconsistent.
+</Aside>
+
+## Portal data
+
+The desktop Portal stores connection profiles in its application data directory and session
+credentials in the operating system credential manager. If secure storage is unavailable, the
+session stays in memory only and the user must sign in again after Portal closes.

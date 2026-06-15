@@ -1,0 +1,142 @@
+---
+title: Downloads
+description: Download FeltnerAI clients and the server — desktop, web, and mobile.
+template: splash
+hero:
+  title: Downloads
+  tagline: Every app that connects to a FeltnerAI server, plus the server itself. All official and open source.
+---
+
+import { Tabs, TabItem, Icon, Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="You need a server first">
+FeltnerAI clients connect to a server **you** run — they don't work on their own. If you don't
+have a server yet, start with the [Quick Start](/docs/quick-start/). Jump to
+[Connecting to a server](#connecting-to-a-server) below once you've installed a client.
+</Aside>
+
+<Tabs>
+  <TabItem label="Clients">
+    <div class="dl-list">
+
+      <div class="dl-card">
+        <span class="dl-icon"><Icon name="laptop" size="1.7rem" /></span>
+        <div class="dl-card-head">
+          <h2 class="dl-card-title">Web App</h2>
+          <span class="dl-badge" data-kind="official">Official</span>
+          <span class="dl-badge" data-kind="oss">Open Source</span>
+        </div>
+        <p class="dl-desc">
+          The web app is served directly by your FeltnerAI server at its root URL — there's
+          nothing to install. Open the server address in any modern browser and sign in.
+        </p>
+        <div class="dl-actions">
+          <a class="dl-btn" data-variant="ghost" href="https://github.com/FeltnerAI/FeltnerAI/tree/main/frontend">
+            <Icon name="github" /> Source
+          </a>
+        </div>
+      </div>
+
+      <div class="dl-card">
+        <span class="dl-icon"><Icon name="laptop" size="1.7rem" /></span>
+        <div class="dl-card-head">
+          <h2 class="dl-card-title">Desktop Portal</h2>
+          <span class="dl-badge" data-kind="official">Official</span>
+          <span class="dl-badge" data-kind="oss">Open Source</span>
+        </div>
+        <p class="dl-desc">
+          The native desktop client for Windows, macOS, and Linux (built with Tauri v2). Connect
+          to one or more servers from a single app, with session credentials stored in your
+          operating system's credential manager. v1 has no in-app updater — reinstall to upgrade.
+        </p>
+        <div class="dl-actions">
+          <a class="dl-btn" data-variant="primary" href="https://github.com/FeltnerAI/FeltnerAI/releases">
+            <Icon name="download" /> Download
+          </a>
+          <a class="dl-btn" data-variant="ghost" href="https://github.com/FeltnerAI/FeltnerAI">
+            <Icon name="github" /> Source
+          </a>
+        </div>
+      </div>
+
+      <div class="dl-card" data-status="planned">
+        <span class="dl-icon"><Icon name="phone" size="1.7rem" /></span>
+        <div class="dl-card-head">
+          <h2 class="dl-card-title">Mobile — iOS &amp; Android</h2>
+          <span class="dl-badge" data-kind="planned">Planned</span>
+        </div>
+        <p class="dl-desc">
+          Native mobile clients are not part of v1. In the meantime, the web app works in mobile
+          browsers against any reachable server.
+        </p>
+      </div>
+
+    </div>
+  </TabItem>
+
+  <TabItem label="Server">
+    <div class="dl-list">
+
+      <div class="dl-card">
+        <span class="dl-icon"><Icon name="rocket" size="1.7rem" /></span>
+        <div class="dl-card-head">
+          <h2 class="dl-card-title">FeltnerAI Server</h2>
+          <span class="dl-badge" data-kind="official">Official</span>
+          <span class="dl-badge" data-kind="oss">Open Source</span>
+        </div>
+        <p class="dl-desc">
+          The standalone Rust server. It hosts the API and the embedded web app, stores your
+          data in SQLite, and talks to your OpenAI-compatible provider. On Windows it also runs a
+          system-tray menu.
+        </p>
+        <div class="dl-actions">
+          <a class="dl-btn" data-variant="primary" href="https://github.com/FeltnerAI/FeltnerAI/releases">
+            <Icon name="download" /> Releases
+          </a>
+          <a class="dl-btn" data-variant="ghost" href="https://github.com/FeltnerAI/FeltnerAI">
+            <Icon name="github" /> Source
+          </a>
+          <a class="dl-btn" data-variant="ghost" href="/docs/server/setup/">
+            <Icon name="open-book" /> Setup guide
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </TabItem>
+</Tabs>
+
+## Build from source
+
+Prefer to build it yourself? The server embeds the web app, so build the frontend first.
+
+```powershell
+bun install --cwd frontend --frozen-lockfile
+bun run --cwd frontend build
+cargo build --release -p feltnerai-server
+```
+
+Build the desktop Portal installer for your current platform:
+
+```powershell
+bun run --cwd frontend tauri build
+```
+
+Tauri emits platform installers under `target/release/bundle`. See
+[Set Up a Server](/docs/server/setup/) for the full walkthrough.
+
+## Connecting to a server
+
+Every client connects to a server you run. You'll need its URL (for example
+`http://127.0.0.1:8080` locally, or `https://ai.example.com` behind a proxy) and a **user
+account** created by an administrator — there is no open registration.
+
+- **Web app** — open the server URL in a browser and sign in. You'll be asked to change your
+  password on first sign-in. The browser client authenticates with a session cookie and CSRF
+  token.
+- **Desktop Portal** — install it, add a server profile using your server's URL, then sign in.
+  The Portal authenticates with an opaque bearer token stored in your OS credential manager.
+
+Each account keeps its own **light**, **dark**, or **system** theme, applied wherever you sign
+in. If no models appear in the picker, an administrator needs to
+[configure a provider](/docs/server/providers/) and enable models.

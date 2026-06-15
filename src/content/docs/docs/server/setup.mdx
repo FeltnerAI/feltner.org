@@ -1,0 +1,82 @@
+---
+title: Set Up a Server
+description: Build the FeltnerAI server, complete first-run setup, and create user accounts.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This page covers standing up a FeltnerAI server from a release build. If you just want to try
+it locally, start with the [Quick Start](/docs/quick-start/).
+
+## Build a release server
+
+The web app must be built first so it is embedded into the server binary.
+
+<Steps>
+
+1. Install frontend dependencies:
+
+   ```powershell
+   bun install --cwd frontend --frozen-lockfile
+   ```
+
+2. Build the web app:
+
+   ```powershell
+   bun run --cwd frontend build
+   ```
+
+3. Build the release server:
+
+   ```powershell
+   cargo build --release -p feltnerai-server
+   ```
+
+</Steps>
+
+The resulting `target/release/feltnerai-server` binary serves both `/api/v1` and the web app.
+On Windows it also runs a system-tray menu with **Open in browser** and **Exit** actions.
+
+## First-run setup
+
+<Steps>
+
+1. Start the server. It prints a temporary **setup token** to the console.
+
+2. Open the server in a browser (default `http://127.0.0.1:8080`).
+
+3. Complete the guided setup:
+   - Test and save an [OpenAI-compatible provider](/docs/server/providers/).
+   - Create the first administrator account.
+
+</Steps>
+
+<Aside type="caution" title="One-time token">
+The setup token changes on every restart and is permanently disabled after setup completes.
+Setup mutations require it in the `X-Setup-Token` header.
+</Aside>
+
+## Create user accounts
+
+FeltnerAI has **no open registration**. Administrators create accounts from **Admin → Users**.
+Each new account is forced to change its password on first sign-in.
+
+From the admin UI you can manage:
+
+- **Users** — create, disable, and reset accounts
+- **Providers** — add OpenAI-compatible providers and test connections
+- **Models** — configure which discovered models are available
+- **Server** — settings, start-at-login (Windows), and backup/restore
+- **Branding** — logo, favicon, and custom CSS
+
+## Start at login (Windows)
+
+On Windows, administrators can toggle **Open FeltnerAI Server when I sign in to Windows** from
+**Admin → Server**. This registers the current executable under the current user's standard
+Windows `Run` key.
+
+## Next steps
+
+- [Configure providers](/docs/server/providers/)
+- [Deployment](/docs/server/deployment/) — bind address, TLS, and environment variables
+- [Backups & data](/docs/server/backups/)

@@ -1,0 +1,75 @@
+---
+title: Connect a Client
+description: Pair the built-in web app or the desktop Portal with a FeltnerAI server.
+---
+
+import { Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+Every FeltnerAI client connects to a server you run. See the full
+[client list](/clients/) for what's available on each platform.
+
+## Before you start
+
+You need:
+
+- A running [FeltnerAI server](/docs/server/setup/) and its URL
+  (for example `http://127.0.0.1:8080` locally, or `https://ai.example.com` behind a proxy).
+- A **user account** created by an administrator. There is no open registration.
+
+<Tabs>
+  <TabItem label="Web app">
+
+The web app is served directly by the server — there is nothing to install.
+
+<Steps>
+
+1. Open the server URL in a browser.
+
+2. Sign in with the username and password your administrator gave you.
+
+3. On first sign-in you are required to change your password.
+
+</Steps>
+
+The browser client authenticates with an HttpOnly session cookie and a CSRF token.
+
+  </TabItem>
+  <TabItem label="Desktop Portal">
+
+The **Portal** is a native desktop app (Windows, macOS, Linux) that can connect to **multiple**
+servers from one place.
+
+<Steps>
+
+1. [Download and install](/clients/) the Portal for your platform.
+
+2. Add a server profile using your server's URL.
+
+3. Sign in with your account credentials.
+
+</Steps>
+
+The Portal authenticates with an opaque bearer session token and stores it in your operating
+system's credential manager.
+
+<Aside type="note" title="If secure storage is unavailable">
+If the OS credential manager can't be used, the session stays in memory only and you'll need to
+sign in again the next time the Portal starts.
+</Aside>
+
+  </TabItem>
+</Tabs>
+
+## Switching themes
+
+Each account has its own **light**, **dark**, or **system** theme preference, saved on the
+server and applied wherever you sign in.
+
+## Troubleshooting
+
+- **Can't reach the server** — confirm the URL and that the server process is running. Behind a
+  proxy, make sure TLS and `FELTNERAI_PUBLIC_URL` are configured (see
+  [Deployment](/docs/server/deployment/)).
+- **No models in the picker** — an administrator needs to
+  [configure a provider](/docs/server/providers/) and enable models.
+- **Forced password change** — expected on first sign-in for a new account.

@@ -1,0 +1,84 @@
+---
+title: API Reference
+description: The FeltnerAI server API — public, authenticated, and administration endpoints.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+All client APIs are versioned under `/api/v1`. This is FeltnerAI's **own** API; it is not an
+OpenAI-compatible gateway (see [OpenAI Compatibility](/docs/api/openai-compatible/)).
+
+## Authentication
+
+- **Browser** login creates an HttpOnly **session cookie** and returns a **CSRF token**.
+  Cookie-authenticated mutations require an `X-CSRF-Token` header.
+- **Portal** login returns an opaque **bearer session token**. Bearer-authenticated requests do
+  not require CSRF.
+- **Setup** mutations require the one-time `X-Setup-Token` header.
+
+## Public endpoints
+
+```text
+GET  /health
+GET  /server
+GET  /setup/status
+POST /setup/test-provider     (X-Setup-Token)
+POST /setup/complete          (X-Setup-Token)
+POST /auth/login
+GET  /branding/logo
+GET  /branding/favicon
+GET  /branding/custom.css
+```
+
+## Authenticated endpoints
+
+```text
+POST /auth/logout
+GET  /auth/session
+PUT  /auth/password
+PUT  /auth/preferences
+GET  /models
+# Chat CRUD
+...  /chats
+GET  /chats/{id}/messages
+# SSE generation, regeneration, and stop
+...  /chats/{id}
+```
+
+### Streaming generation
+
+Generation accepts a client **UUID** and emits Server-Sent Events named:
+
+| Event | Meaning |
+| --- | --- |
+| `started` | The server accepted the request and began streaming |
+| `delta` | An incremental chunk of the response |
+| `completed` | The response finished |
+| `error` | Generation failed |
+
+The JSON payload of each event repeats the normalized `event` discriminator.
+
+## Administration endpoints
+
+```text
+# Users
+...  /admin/users
+# Providers and connection tests
+...  /admin/providers
+POST /admin/providers/{id}/test
+# Models
+...  /admin/providers/{id}/models
+...  /admin/models
+# Server settings
+...  /admin/server
+# Full-data export / import
+POST /admin/data/export
+POST /admin/data/import
+# Branding configuration and uploads
+...  /admin/branding
+```
+
+<Aside type="note" title="No personal API keys">
+The server has no user-facing OpenAI gateway and does not issue personal API keys. All access
+goes through authenticated sessions.
+</Aside>

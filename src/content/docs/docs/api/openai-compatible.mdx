@@ -1,0 +1,49 @@
+---
+title: OpenAI Compatibility
+description: How FeltnerAI integrates with OpenAI-compatible providers — and what it does not expose.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+"OpenAI-compatible" in FeltnerAI refers to the **upstream provider** you connect — the model
+service FeltnerAI calls on your behalf. FeltnerAI speaks the OpenAI Chat Completions protocol to
+that provider so you can bring almost any compatible service.
+
+<Aside type="caution" title="FeltnerAI is not an OpenAI gateway">
+FeltnerAI **does not** expose a user-facing OpenAI-compatible endpoint and **does not** issue
+personal API keys. Clients talk to FeltnerAI's own versioned API under `/api/v1` (see the
+[API Reference](/docs/api/reference/)). OpenAI compatibility is strictly about the provider it
+connects *to*.
+</Aside>
+
+## What a compatible provider must offer
+
+A provider works with FeltnerAI if it implements the OpenAI-style API surface:
+
+- **Base URL** — the root of the provider's OpenAI-compatible API.
+- **Chat completions** — a streaming `chat/completions` endpoint.
+- **Model discovery** — a `models` endpoint FeltnerAI calls to list available models.
+- **Authentication** — a bearer API key, and/or custom secret headers the provider requires.
+
+This covers the OpenAI API itself as well as the many self-hosted servers and hosted gateways
+that implement the same contract.
+
+## How FeltnerAI uses the provider
+
+1. You add the provider during [setup](/docs/server/setup/) or from **Admin → Providers**.
+2. FeltnerAI validates the credentials with a live connection test before saving.
+3. On save, FeltnerAI **discovers models** from the provider's model endpoint.
+4. When a user sends a message, FeltnerAI calls the provider's streaming chat endpoint and
+   **normalizes** the response into its own SSE events (`started`, `delta`, `completed`,
+   `error`) for the client.
+
+Provider API keys and custom secret headers are **encrypted at rest** with the server's local
+encryption key.
+
+## Why this design
+
+Normalizing at the server keeps clients simple and consistent, keeps your provider credentials
+on the server (never shipped to clients), and lets you switch providers without changing how
+clients behave.
+
+See [Configure Providers](/docs/server/providers/) for the step-by-step setup.

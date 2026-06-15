@@ -1,0 +1,64 @@
+---
+title: How It Works
+description: The architecture of a FeltnerAI deployment and how a chat request flows through it.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A FeltnerAI deployment has one server and any number of clients. The server is the only
+component that holds state or talks to your provider.
+
+## The pieces
+
+| Component | Built with | Role |
+| --- | --- | --- |
+| **Server** | Rust (Axum + SQLx) | Hosts the API and web app, stores data, talks to the provider |
+| **Web app** | React | Embedded in the server binary and served at `/` |
+| **Portal** | Tauri v2 + React | Native desktop client for one or more servers |
+| **Provider** | Any OpenAI-compatible API | The upstream model service you bring |
+
+The web app and the Portal are built from the **same React bundle**, so the experience is
+consistent across browser and native clients.
+
+## Request flow
+
+When you send a message:
+
+1. A client (web app or Portal) calls the server's versioned API under `/api/v1`.
+2. The server authenticates the request — a session cookie + CSRF token for the browser, or an
+   opaque bearer token for the Portal.
+3. The server loads the chat, decrypts the relevant provider credentials, and calls your
+   **OpenAI-compatible provider**.
+4. The upstream stream is normalized and relayed to the client as Server-Sent Events:
+   `started`, `delta`, `completed`, and `error`.
+5. The message and its response are saved to the chat, owned by your account.
+
+<Aside type="note" title="Streaming">
+Generation, regeneration, and stop are all handled over SSE. The client supplies a UUID so the
+server can correlate the stream, and every event repeats a normalized `event` discriminator in
+its JSON payload.
+</Aside>
+
+## Storage
+
+All state lives in a single SQLite database (WAL mode) in your operating system's persistent
+user-data directory, alongside an `encryption.key` used to decrypt provider API keys and custom
+secret headers.
+
+<Aside type="caution" title="Back them up together">
+A database backup without its matching `encryption.key` cannot recover provider credentials.
+See [Backups & Data](/docs/server/backups/).
+</Aside>
+
+Run **only one** FeltnerAI process against a given data directory.
+
+## Security model
+
+- **Passwords** are hashed with Argon2id.
+- **Sessions** are opaque tokens, stored hashed.
+- **Browser** requests use an HttpOnly session cookie plus an `X-CSRF-Token` header on
+  mutations; **Portal** requests use a bearer token and do not require CSRF.
+- **Provider secrets** are encrypted at rest with the local encryption key.
+- **First-run setup** is gated by a console-only setup token that is disabled after setup.
+
+See the [API Reference](/docs/api/reference/) for the full surface.

@@ -1,0 +1,62 @@
+---
+title: Overview
+description: What FeltnerAI is, how the pieces fit together, and where to go next.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+FeltnerAI is a private, self-hosted chat server for OpenAI-compatible providers. It is made of
+three parts that share one codebase:
+
+- A standalone **Rust server** that stores your data and talks to your provider.
+- A shared **React web application** served directly by the server.
+- A cross-platform desktop **Portal** (built with Tauri v2) for connecting to one or more
+  servers from your machine.
+
+You host the server, point it at an OpenAI-compatible provider, create user accounts, and
+connect from the web app or a native client.
+
+## Where to go next
+
+<CardGrid>
+  <LinkCard title="Quick Start" description="Build and run the server, then complete setup." href="/docs/quick-start/" />
+  <LinkCard title="How It Works" description="The architecture and request flow at a glance." href="/docs/how-it-works/" />
+  <LinkCard title="Set Up a Server" description="First admin, users, and production hardening." href="/docs/server/setup/" />
+  <LinkCard title="Download a Client" description="Get the web app or desktop Portal and connect to your server." href="/downloads/" />
+</CardGrid>
+
+## Feature summary
+
+- Console-token-protected first-run setup
+- Administrator-created user accounts with forced password changes
+- Argon2id passwords, hashed opaque sessions, CSRF protection, and encrypted provider secrets
+- Generic OpenAI-compatible providers with model discovery
+- Saved, user-owned chats with normalized SSE streaming, stop, and regeneration
+- User, provider, model, server, and branding administration
+- Per-account light, dark, and system theme preferences
+- Admin ZIP backup/restore and Windows start-at-login controls
+- Windows server tray with browser and clean-exit actions
+- Browser and Windows/macOS/Linux Portal clients from one React bundle
+- SQLite WAL storage in the operating system's persistent user-data directory
+
+## Requirements
+
+To build and run a server yourself you need:
+
+- **Rust** 1.96 or newer
+- **Bun** 1.3 or newer
+- **`just`** (command runner)
+- Platform prerequisites for **Tauri v2** if you also build the Portal
+
+## Scope
+
+FeltnerAI v1 intentionally supports **one SQLite-backed server process**. The following are
+**not** included in v1:
+
+- Open registration, invitations, email, and 2FA
+- Attachments, multimodal chat, and message branching
+- Quotas, provider routing/fallback, and personal API keys
+- A user-facing OpenAI gateway
+- Docker packaging, Postgres, and automatic Portal updates
+
+FeltnerAI is licensed under **AGPL-3.0-only**.

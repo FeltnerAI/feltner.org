@@ -1,0 +1,40 @@
+---
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+
+// Highlight the link when the user is on the Downloads page.
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const onDownloads = path === '/downloads';
+---
+
+<a
+  href="/downloads/"
+  class="header-nav-link"
+  aria-current={onDownloads ? 'page' : undefined}
+>
+  Downloads
+</a>
+<Default {...Astro.props}><slot /></Default>
+
+<style>
+  .header-nav-link {
+    align-self: center;
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .header-nav-link:hover {
+    color: var(--sl-color-white);
+  }
+  .header-nav-link[aria-current='page'] {
+    color: var(--sl-color-text-accent);
+  }
+  /* On narrow viewports the header is cramped; the page is still reachable
+     from the homepage hero and links throughout the docs. */
+  @media (max-width: 50rem) {
+    .header-nav-link {
+      display: none;
+    }
+  }
+</style>
